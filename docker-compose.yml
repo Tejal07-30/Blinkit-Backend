@@ -1,0 +1,18 @@
+# just the database for now — the backend runs locally with uvicorn.
+# a container for the backend + nginx gets added in Phase 3.
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: blinkit
+      POSTGRES_PASSWORD: blinkit
+      POSTGRES_DB: blinkit_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
