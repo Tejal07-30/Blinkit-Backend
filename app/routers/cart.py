@@ -9,8 +9,6 @@ from app.auth_utils import get_current_user
 router = APIRouter(prefix="/cart", tags=["cart"])
 
 
-# small helper used by every route below — every user already gets a cart
-# at signup, so this basically just looks it up
 def get_user_cart(db: Session, user_id: int) -> Cart:
     cart = db.query(Cart).filter(Cart.user_id == user_id).first()
     if not cart:
@@ -21,7 +19,6 @@ def get_user_cart(db: Session, user_id: int) -> Cart:
     return cart
 
 
-# builds the CartResponse (list of items + total price) for a given cart
 def build_cart_response(cart: Cart) -> CartResponse:
     items_out = []
     total = 0.0
@@ -49,7 +46,6 @@ def add_to_cart(data: CartItemAdd, current_user: User = Depends(get_current_user
     existing = db.query(CartItem).filter(CartItem.cart_id == cart.id, CartItem.item_id == data.item_id).first()
     total_quantity = data.quantity + (existing.quantity if existing else 0)
 
-    # don't let the cart hold more than what's actually in stock
     if total_quantity > item.stock:
         raise HTTPException(status_code=400, detail=f"Only {item.stock} unit(s) of '{item.name}' available")
 
